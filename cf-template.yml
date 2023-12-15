@@ -1,22 +1,24 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Parameters:
-  PortfolioWebsiteBucket:
-    Type: String
-    Description: Name for the S3 bucket where React app will be deployed
+
 
 Resources:
-  portfolio-website-bucket:
+  RanaPortfolioBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref PortfolioWebsiteBucket
-      AccessControlPolicy: PublicRead
+      BucketName: rana.lol
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
       WebsiteConfiguration:
         IndexDocument: index.html
+        ErrorDocument: index.html
 
-  PortfolioWebsiteBucketPolicy:
+  RanaPortfolioBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref PortfolioWebsiteBucket
+      Bucket: !Ref RanaPortfolioBucket
       PolicyDocument:
         Statement:
           - Sid: PublicReadGetObject
@@ -27,10 +29,10 @@ Resources:
             Resource: !Join
               - ''
               - - 'arn:aws:s3:::'
-                - !Ref PortfolioWebsiteBucket
+                - !Ref RanaPortfolioBucket
                 - '/*'
 
 Outputs:
-  PortfolioWebsiteBucketURL:
+  RanaPortfolioBucketURL:
     Description: URL of the deployed React app in S3 bucket
-    Value: !GetAtt PortfolioWebsiteBucket.WebsiteURL
+    Value: !GetAtt RanaPortfolioBucket.WebsiteURL
