@@ -1,7 +1,20 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
+Parameters:
+  PortfolioDomainName:
+    Description: Website Domain Name
+    Type: String
+    Default: rana.lol
+  Cert:
+    Description: SSL Certificate ARN
+    Type: String
+    Default: rana.lol-cert
+  AccountNumber:
+    Description: AWS Account Number
+
 Resources:
-  RanaPortfolioBucket:
+  # Creating resources for my personal website
+  PortfolioWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: rana.lol
@@ -10,28 +23,112 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: ObjectWriter
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: index.html
+      # WebsiteConfiguration:
+        # IndexDocument: index.html
+        # ErrorDocument: index.html
 
-  RanaPortfolioBucketPolicy:
+  PortfolioWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    DependsOn: CloudFrontDistribution
     Properties:
-      Bucket: !Ref RanaPortfolioBucket
+      Bucket: !Ref PortfolioWebsiteBucket
       PolicyDocument:
         Statement:
-          - Sid: PublicReadGetObject
+          # - Sid: PublicReadGetObject
+          #   Effect: Allow
+          #   Principal: '*'
+          #   Action:
+          #     - s3:GetObject
+          #   Resource: !Join
+          #     - ''
+          #     - - 'arn:aws:s3:::'
+          #       - !Ref PortfolioWebsiteBucket
+          #       - '/*'
+          - Sid: CloudFrontDistributionAccess
             Effect: Allow
-            Principal: '*'
-            Action:
-              - s3:GetObject
-            Resource: !Join
-              - ''
-              - - 'arn:aws:s3:::'
-                - !Ref RanaPortfolioBucket
-                - '/*'
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Action: "s3:GetObject"
+            Resource: !Sub ${PortfolioWebsiteBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub ${CloudFrontDistribution.Arn}
+              
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Description: "Origin Access Control (OAC)"
+        Name: portfolio-website-oac
+        OriginAccessControlOriginType: s3
+        SigningBehaviour: always
+        SigningProtocol: sigv4
+
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    DependsOn: PortfolioWebsiteBucket
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref PortfolioDomainName
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Cert
+          SslSupportMethod: sni-only
+            CustomErrorResponses:
+              - ErrorCode: 403
+                ResponseCode: 404
+                ResponsePagePath: !Ref ErrorPagePath
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          DefaultTTL: 3600
+          ForwardedValues:
+            Cookies:
+                Forward: none
+            QueryString: false
+          MaxTTL: 86400
+          MinTTL: 60
+          TargetOriginId: s3origin
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: "index.html"
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - DomainName: !GetAtt S3Bucket.DomainName
+            Id: personal-website-host
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+        PriceClass: PriceClass_All
+
+  PortfolioHostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: rana.lol  # Replace with your desired domain name
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: !Ref PortfolioHostedZone
+        Comment: DNS name for cloud front
+        Name: !Ref PortfolioDomainName
+        Type: A
+        ResourceRecords:
+          - !GetAtt CloudFrontDistribution.DomainName
+    DependsOn: CloudFrontDistribution
 
 Outputs:
-  RanaPortfolioBucketURL:
+  PortfolioWebsiteBucket:
+    Description: Bucket name of the portfolio website
+    Value: !Ref PortfolioWebsiteBucket
+  PortfolioWebsiteBucketURL:
     Description: URL of the deployed React app in S3 bucket
-    Value: !GetAtt RanaPortfolioBucket.WebsiteURL
+    Value: !GetAtt PortfolioWebsiteBucket.WebsiteURL
+
