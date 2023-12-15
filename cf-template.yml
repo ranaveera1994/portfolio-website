@@ -111,7 +111,7 @@ Resources:
   PortfolioHostedZone:
     Type: AWS::Route53::HostedZone
     Properties:
-      Name: rana.lol  # Replace with your desired domain name
+      Name: rana.lol
 
   DNSRecord:
     Type: AWS::Route53::RecordSet
