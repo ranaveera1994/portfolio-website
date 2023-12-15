@@ -39,7 +39,16 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PORTFOLIO_WEBSITE }}
         aws-region: ${{ secrets.AWS_REGION_PORTFOLIO_WEBSITE }}
 
+    - name: Check if stack exists
+      id: check-stack
+      run: aws cloudformation describe-stacks --stack-name portfolio-website-stack
+
+    - name: Update or create stack
+      if: steps.check-stack.outcome == "success"
+      run: aws cloudformation update-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml --no-fail-on-empty-changeset
+
     - name: Deploy CloudFormation Stack
+      if: steps.check-stack.outcome != 'success'
       run: aws cloudformation create-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml
 
     - name: Sync build to S3 bucket
