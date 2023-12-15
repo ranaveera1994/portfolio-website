@@ -41,15 +41,19 @@ jobs:
 
     - name: Check if stack exists
       id: check-stack
-      run: aws cloudformation describe-stacks --stack-name portfolio-website-stack
+      run: aws cloudformation describe-stacks --stack-name portfolio-website-stack || echo "StackNotFound"
 
     - name: Update or create stack
-      if: ${{ steps.check-stack.outcome == 'success' }}
-      run: aws cloudformation update-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml --no-fail-on-empty-changeset
-
-    - name: Deploy CloudFormation Stack
-      if: ${{ steps.check-stack.outcome != 'success' }}
-      run: aws cloudformation create-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml
+      run: |
+        # Check if the stack was found
+        if [ "${{ steps.check-stack.run.result }}" != "StackNotFound" ]; then
+          # Update the CloudFormation stack
+          aws cloudformation update-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml
+        else
+          # Create the CloudFormation stack if it doesn't exist
+          # Example command:
+          aws cloudformation create-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml
+        fi
 
     - name: Sync build to S3 bucket
       run: aws s3 sync build/ s3://${{ env.PORTFOLIO_BUCKT_NAME }} --delete
