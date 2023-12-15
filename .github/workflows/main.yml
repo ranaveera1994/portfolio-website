@@ -39,21 +39,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PORTFOLIO_WEBSITE }}
         aws-region: ${{ secrets.AWS_REGION_PORTFOLIO_WEBSITE }}
 
-    - name: Check if stack exists
-      id: check-stack
-      run: aws cloudformation describe-stacks --stack-name portfolio-website-stack || echo "StackNotFound"
-
-    - name: Update or create stack
-      run: |
-        # Check if the stack was found
-        if [ "${{ steps.check-stack.run.result }}" != "StackNotFound" ]; then
-          # Update the CloudFormation stack
-          aws cloudformation update-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml
-        else
-          # Create the CloudFormation stack if it doesn't exist
-          # Example command:
-          aws cloudformation create-stack --stack-name portfolio-website-stack --template-body file://cf-template.yml
-        fi
+    - name: Deploy CloudFormation Stack
+      run: aws cloudformation deploy --stack-name portfolio-website-stack --template-body file://cf-template.yml
 
     - name: Sync build to S3 bucket
       run: aws s3 sync build/ s3://${{ env.PORTFOLIO_BUCKT_NAME }} --delete
