@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  PortfolioWebsiteBucket:
+    Type: String
+    Description: Name for the S3 bucket where React app will be deployed
+
+Resources:
+  portfolio-website-bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  PortfolioWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PortfolioWebsiteBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action:
+              - s3:GetObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref PortfolioWebsiteBucket
+                - '/*'
+
+Outputs:
+  PortfolioWebsiteBucketURL:
+    Description: URL of the deployed React app in S3 bucket
+    Value: !GetAtt PortfolioWebsiteBucket.WebsiteURL
