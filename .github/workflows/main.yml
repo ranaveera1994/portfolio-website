@@ -40,7 +40,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION_PORTFOLIO_WEBSITE }}
 
     - name: Deploy CloudFormation Stack
-      run: aws cloudformation deploy --stack-name portfolio-website-stack --template-body file://cf-template.yml
+      run: aws cloudformation deploy --stack-name portfolio-website-stack --template-file file://cf-template.yml
 
     - name: Sync build to S3 bucket
       run: aws s3 sync build/ s3://${{ env.PORTFOLIO_BUCKT_NAME }} --delete
