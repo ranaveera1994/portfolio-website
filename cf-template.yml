@@ -5,19 +5,13 @@ Parameters:
     Description: Website Domain Name
     Type: String
     Default: rana.lol
-  Cert:
-    Description: SSL Certificate ARN
-    Type: String
-    Default: rana.lol-cert
-  AccountNumber:
-    Description: AWS Account Number
 
 Resources:
   # Creating resources for my personal website
   PortfolioWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: rana.lol
+      BucketName: !Ref PortfolioDomainName
       PublicAccessBlockConfiguration:
           BlockPublicAcls: false
       OwnershipControls:
@@ -53,7 +47,8 @@ Resources:
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub ${CloudFrontDistribution.Arn}
-              
+
+  # Creating certificate in certificate manager    
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
@@ -109,9 +104,18 @@ Resources:
         PriceClass: PriceClass_All
 
   PortfolioHostedZone:
-    Type: AWS::Route53::HostedZone
+    Type: 'AWS::Route53::HostedZone'
     Properties:
-      Name: rana.lol
+      Name: !Ref PortfolioDomainName
+
+  PortfolioCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: PortfolioDomainName
+      DomainValidationOptions:
+        - DomainName: PortfolioDomainName
+          HostedZoneId: !Ref PortfolioHostedZone
+      ValidationMethod: DNS
 
   DNSRecord:
     Type: AWS::Route53::RecordSet
