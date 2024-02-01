@@ -43,4 +43,4 @@ jobs:
       run: aws cloudformation deploy --template-file cf-template.yml --stack-name portfolio-website-stack --no-execute-changeset --no-fail-on-empty-changeset
 
     - name: Sync build to S3 bucket
-      run: aws s3 sync build/ s3://${{ env.PORTFOLIO_BUCKT_NAME }} --delete
+      run: aws s3 sync build/ s3://${{ env.PORTFOLIO_BUCKT_NAME }} --delete 
