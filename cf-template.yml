@@ -117,8 +117,6 @@ Resources:
   #           OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
   #       PriceClass: PriceClass_All
 
-  
-
   # DNSRecord:
   #   Type: AWS::Route53::RecordSet
   #     Properties:
