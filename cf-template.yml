@@ -29,9 +29,9 @@ Resources:
   PortfolioCertificate:
     Type: 'AWS::CertificateManager::Certificate'
     Properties:
-      DomainName: PortfolioDomainName
+      DomainName: !Ref PortfolioDomainName
       DomainValidationOptions:
-        - DomainName: PortfolioDomainName
+        - DomainName: !Ref PortfolioDomainName
           HostedZoneId: !Ref PortfolioHostedZone
       ValidationMethod: DNS
 
