@@ -4,7 +4,7 @@ Parameters:
   PortfolioDomainName:
     Description: Website Domain Name
     Type: String
-    Default: rana.lol
+    Default: "rana.lol"
 
 Resources:
   # Creating resources for my personal website
@@ -24,7 +24,7 @@ Resources:
   PortfolioHostedZone:
     Type: 'AWS::Route53::HostedZone'
     Properties:
-      Name: !Ref PortfolioDomainName
+      Name: !Ref PortfolioDomainName 
 
   PortfolioCertificate:
     Type: 'AWS::CertificateManager::Certificate'
