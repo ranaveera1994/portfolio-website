@@ -4,7 +4,7 @@ Parameters:
   PortfolioDomainName:
     Description: Website Domain Name
     Type: String
-    Default: "rana.lol"
+    Default: rana.lol
 
 Resources:
   # Creating resources for my personal website
@@ -33,6 +33,8 @@ Resources:
       DomainValidationOptions:
         - DomainName: !Ref PortfolioDomainName
           HostedZoneId: !Ref PortfolioHostedZone
+      SubjectAlternativeNames: 
+        - "*.rana.lol"
       ValidationMethod: DNS
 
   # PortfolioWebsiteBucketPolicy:
