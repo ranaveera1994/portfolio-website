@@ -76,7 +76,7 @@ Resources:
   #       SigningProtocol: sigv4
 
   # CloudFrontDistribution:
-  #   Type: "AWS::CloudFront::Distribution"
+  #   Type: "AWS::CloudFront::Distribution" 
   #   DependsOn: PortfolioWebsiteBucket
   #   Properties:
   #     DistributionConfig:
