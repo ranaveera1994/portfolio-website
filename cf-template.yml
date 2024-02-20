@@ -137,22 +137,22 @@ Resources:
 
   DNSRecord:
     Type: AWS::Route53::RecordSet
-      Properties:
-        HostedZoneId: !Ref PortfolioHostedZone
-        RecordSets:
-        - Name: !Ref PortfolioDomainName
-          Type: A
-          AliasTarget: 
-            HostedZoneId: !Ref PortfolioHostedZone
-            DNSName: !GetAtt
-              - PortfolioCloudFrontDistribution
-              - DomainName
-        # Comment: DNS name for cloud front
-        # Name: !Ref PortfolioDomainName
-        # Type: A
-        # ResourceRecords:
-        #   - !GetAtt CloudFrontDistribution.DomainName
-    DependsOn: PortfolioCloudFrontDistribution
+    Properties:
+      HostedZoneId: !Ref PortfolioHostedZone
+      RecordSets:
+      - Name: !Ref PortfolioDomainName
+        Type: A
+        AliasTarget: 
+          HostedZoneId: !Ref PortfolioHostedZone
+          DNSName: !GetAtt
+            - PortfolioCloudFrontDistribution
+            - DomainName
+      # Comment: DNS name for cloud front
+      # Name: !Ref PortfolioDomainName
+      # Type: A
+      # ResourceRecords:
+      #   - !GetAtt CloudFrontDistribution.DomainName
+  DependsOn: PortfolioCloudFrontDistribution
 
 Outputs:
   PortfolioWebsiteBucket:
