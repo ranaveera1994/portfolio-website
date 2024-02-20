@@ -52,13 +52,13 @@ Resources:
           - Sid: CloudFrontDistributionAccess
             Effect: Allow
             Principal:
-              CanonicalUser: !GetAtt TheCloudFrontOriginAccessIdentity.S3CanonicalUserId
+              CanonicalUser: !GetAtt PortfolioCloudFrontOriginAccessIdentity.S3CanonicalUserId
             Action:
               s3:GetObject
             Resource: !Join [ "", [ "arn:aws:s3:::", !Ref PortfolioWebsiteBucket, "/*" ]]
             Condition:
               StringEquals:
-                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${PortfolioCloudFrontDistribution}"
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::248073758255:distribution/${PortfolioCloudFrontDistribution}"
           # - Sid: PublicReadGetObject
           #   Effect: Allow
           #   Principal: '*'
