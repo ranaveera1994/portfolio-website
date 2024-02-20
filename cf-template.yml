@@ -103,7 +103,7 @@ Resources:
           - ErrorCachingMinTTL: 300
             ErrorCode: 403
             ResponseCode: 404
-            ResponsePagePath: "index.html"
+            ResponsePagePath: /index.html
         DefaultCacheBehavior:
           ViewerProtocolPolicy: https-only
           AllowedMethods:
