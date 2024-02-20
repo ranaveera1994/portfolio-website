@@ -12,11 +12,16 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref PortfolioDomainName
-      PublicAccessBlockConfiguration:
-          BlockPublicAcls: false
-      OwnershipControls:
-        Rules:
-          - ObjectOwnership: ObjectWriter
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          -
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      # PublicAccessBlockConfiguration:
+      #     BlockPublicAcls: false
+      # OwnershipControls:
+      #   Rules:
+      #     - ObjectOwnership: ObjectWriter
       # WebsiteConfiguration:
         # IndexDocument: index.html
         # ErrorDocument: index.html
@@ -37,32 +42,33 @@ Resources:
         - "*.rana.lol"
       ValidationMethod: DNS
 
-  # PortfolioWebsiteBucketPolicy:
-  #   Type: AWS::S3::BucketPolicy
-  #   DependsOn: CloudFrontDistribution
-  #   Properties:
-  #     Bucket: !Ref PortfolioWebsiteBucket
-  #     PolicyDocument:
-  #       Statement:
-  #         # - Sid: PublicReadGetObject
-  #         #   Effect: Allow
-  #         #   Principal: '*'
-  #         #   Action:
-  #         #     - s3:GetObject
-  #         #   Resource: !Join
-  #         #     - ''
-  #         #     - - 'arn:aws:s3:::'
-  #         #       - !Ref PortfolioWebsiteBucket
-  #         #       - '/*'
-  #         - Sid: CloudFrontDistributionAccess
-  #           Effect: Allow
-  #           Principal:
-  #             Service: "cloudfront.amazonaws.com"
-  #           Action: "s3:GetObject"
-  #           Resource: !Sub ${PortfolioWebsiteBucket.Arn}/*
-  #           Condition:
-  #             StringEquals:
-  #               AWS:SourceArn: !Sub ${CloudFrontDistribution.Arn}
+  PortfolioWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: CloudFrontDistribution
+    Properties:
+      Bucket: !Ref PortfolioWebsiteBucket
+      PolicyDocument:
+        Statement:
+          # - Sid: PublicReadGetObject
+          #   Effect: Allow
+          #   Principal: '*'
+          #   Action:
+          #     - s3:GetObject
+          #   Resource: !Join
+          #     - ''
+          #     - - 'arn:aws:s3:::'
+          #       - !Ref PortfolioWebsiteBucket
+          #       - '/*'
+          - Sid: CloudFrontDistributionAccess
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt TheCloudFrontOriginAccessIdentity.S3CanonicalUserId
+            Action:
+              s3:GetObject
+            Resource: !Sub ${PortfolioWebsiteBucket.Arn}/*
+            # Condition:
+            #   StringEquals:
+            #     AWS:SourceArn: !Sub ${CloudFrontDistribution.Arn}
 
   # # Creating certificate in certificate manager    
   # CloudFrontOriginAccessControl:
@@ -75,60 +81,77 @@ Resources:
   #       SigningBehaviour: always
   #       SigningProtocol: sigv4
 
-  # CloudFrontDistribution:
-  #   Type: "AWS::CloudFront::Distribution" 
-  #   DependsOn: PortfolioWebsiteBucket
-  #   Properties:
-  #     DistributionConfig:
-  #       Aliases:
-  #         - !Ref PortfolioDomainName
-  #       ViewerCertificate:
-  #         AcmCertificateArn: !Ref Cert
-  #         SslSupportMethod: sni-only
-  #           CustomErrorResponses:
-  #             - ErrorCode: 403
-  #               ResponseCode: 404
-  #               ResponsePagePath: !Ref ErrorPagePath
-  #       DefaultCacheBehavior:
-  #         AllowedMethods:
-  #           - GET
-  #           - HEAD
-  #           - OPTIONS
-  #         CachedMethods:
-  #           - GET
-  #           - HEAD
-  #           - OPTIONS
-  #         Compress: true
-  #         DefaultTTL: 3600
-  #         ForwardedValues:
-  #           Cookies:
-  #               Forward: none
-  #           QueryString: false
-  #         MaxTTL: 86400
-  #         MinTTL: 60
-  #         TargetOriginId: s3origin
-  #         ViewerProtocolPolicy: redirect-to-https
-  #       DefaultRootObject: "index.html"
-  #       Enabled: true
-  #       HttpVersion: http2
-  #       Origins:
-  #         - DomainName: !GetAtt S3Bucket.DomainName
-  #           Id: personal-website-host
-  #           S3OriginConfig:
-  #             OriginAccessIdentity: ""
-  #           OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
-  #       PriceClass: PriceClass_All
+  PortfolioCloudFrontOriginAccessIdentity:
+  Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+  Properties:
+    CloudFrontOriginAccessIdentityConfig:
+      Comment: !Sub 'CloudFront OAI for ${PortfolioDomainName}'
 
-  # DNSRecord:
-  #   Type: AWS::Route53::RecordSet
-  #     Properties:
-  #       HostedZoneId: !Ref PortfolioHostedZone
-  #       Comment: DNS name for cloud front
-  #       Name: !Ref PortfolioDomainName
-  #       Type: A
-  #       ResourceRecords:
-  #         - !GetAtt CloudFrontDistribution.DomainName
-  #   DependsOn: CloudFrontDistribution
+  PortfolioCloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution" 
+    DependsOn: PortfolioWebsiteBucket
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref PortfolioDomainName
+        ViewerCertificate:
+          AcmCertificateArn: !Ref PortfolioCertificate
+          SslSupportMethod: sni-only
+            CustomErrorResponses:
+              - ErrorCode: 403
+                ResponseCode: 404
+                ResponsePagePath: "index.html"
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          DefaultTTL: 3600
+          ForwardedValues:
+            Cookies:
+                Forward: none
+            QueryString: false
+          MaxTTL: 86400
+          MinTTL: 60
+          TargetOriginId: s3origin
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: "index.html"
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - DomainName: 
+              !Join [ "", [ !Ref PortfolioWebsiteBucket, ".s3.amazonaws.com" ] ]
+            Id: personal-website-host
+            S3OriginConfig:
+              OriginAccessIdentity:
+                !Join [ "", [ "origin-access-identity/cloudfront/", !Ref PortfolioCloudFrontOriginAccessIdentity ] ]
+            #   OriginAccessIdentity: ""
+            # OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+        PriceClass: PriceClass_All
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: !Ref PortfolioHostedZone
+        RecordSets:
+        - Name: !Ref PortfolioDomainName
+          Type: A
+          AliasTarget: 
+            HostedZoneId: !Ref PortfolioHostedZone
+            DNSName: !GetAtt
+              - PortfolioCloudFrontDistribution
+              - DomainName
+        # Comment: DNS name for cloud front
+        # Name: !Ref PortfolioDomainName
+        # Type: A
+        # ResourceRecords:
+        #   - !GetAtt CloudFrontDistribution.DomainName
+    DependsOn: PortfolioCloudFrontDistribution
 
 Outputs:
   PortfolioWebsiteBucket:
