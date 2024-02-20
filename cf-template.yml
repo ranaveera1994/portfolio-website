@@ -17,14 +17,6 @@ Resources:
           -
             ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      # PublicAccessBlockConfiguration:
-      #     BlockPublicAcls: false
-      # OwnershipControls:
-      #   Rules:
-      #     - ObjectOwnership: ObjectWriter
-      # WebsiteConfiguration:
-        # IndexDocument: index.html
-        # ErrorDocument: index.html
 
   PortfolioHostedZone:
     Type: 'AWS::Route53::HostedZone'
@@ -56,30 +48,6 @@ Resources:
             Action:
               s3:GetObject
             Resource: !Join [ "", [ "arn:aws:s3:::", !Ref PortfolioWebsiteBucket, "/*" ]]
-            # Condition:
-            #   StringEquals:
-            #     AWS:SourceArn: !Sub "arn:aws:cloudfront::248073758255:distribution/${PortfolioCloudFrontDistribution}"
-          # - Sid: PublicReadGetObject
-          #   Effect: Allow
-          #   Principal: '*'
-          #   Action:
-          #     - s3:GetObject
-          #   Resource: !Join
-          #     - ''
-          #     - - 'arn:aws:s3:::'
-          #       - !Ref PortfolioWebsiteBucket
-          #       - '/*'
-
-  # # Creating certificate in certificate manager    
-  # CloudFrontOriginAccessControl:
-  #   Type: AWS::CloudFront::OriginAccessControl
-  #   Properties:
-  #     OriginAccessControlConfig:
-  #       Description: "Origin Access Control (OAC)"
-  #       Name: portfolio-website-oac
-  #       OriginAccessControlOriginType: s3
-  #       SigningBehaviour: always
-  #       SigningProtocol: sigv4
 
   PortfolioCloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -134,8 +102,6 @@ Resources:
             S3OriginConfig:
               OriginAccessIdentity:
                 !Join [ "", [ "origin-access-identity/cloudfront/", !Ref PortfolioCloudFrontOriginAccessIdentity ] ]
-            #   OriginAccessIdentity: ""
-            # OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
         PriceClass: PriceClass_All
 
   DNSRecord:
@@ -148,12 +114,6 @@ Resources:
       AliasTarget: 
         HostedZoneId: Z2FDTNDATAQYW2
         DNSName: !GetAtt PortfolioCloudFrontDistribution.DomainName
-      # Comment: DNS name for cloud front
-      # Name: !Ref PortfolioDomainName
-      # Type: A
-      # ResourceRecords:
-      #   - !GetAtt CloudFrontDistribution.DomainName
- 
 
 Outputs:
   PortfolioWebsiteBucket:
