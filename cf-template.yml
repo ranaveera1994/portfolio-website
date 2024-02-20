@@ -97,10 +97,11 @@ Resources:
         ViewerCertificate:
           AcmCertificateArn: !Ref PortfolioCertificate
           SslSupportMethod: sni-only
-            CustomErrorResponses:
-              - ErrorCode: 403
-                ResponseCode: 404
-                # ResponsePagePath: "index.html"
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 300
+            ErrorCode: 403
+            ResponseCode: 404
+            # ResponsePagePath: "index.html"
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
