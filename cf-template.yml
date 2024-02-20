@@ -82,10 +82,10 @@ Resources:
   #       SigningProtocol: sigv4
 
   PortfolioCloudFrontOriginAccessIdentity:
-  Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-  Properties:
-    CloudFrontOriginAccessIdentityConfig:
-      Comment: !Sub 'CloudFront OAI for ${PortfolioDomainName}'
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'CloudFront OAI for ${PortfolioDomainName}'
 
   PortfolioCloudFrontDistribution:
     Type: "AWS::CloudFront::Distribution" 
