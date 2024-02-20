@@ -105,6 +105,7 @@ Resources:
             ResponseCode: 404
             ResponsePagePath: "index.html"
         DefaultCacheBehavior:
+          ViewerProtocolPolicy: https-only
           AllowedMethods:
             - GET
             - HEAD
@@ -121,7 +122,7 @@ Resources:
             QueryString: false
           MaxTTL: 86400
           MinTTL: 60
-          TargetOriginId: s3origin
+          TargetOriginId: personal-website-host-origin
           ViewerProtocolPolicy: redirect-to-https
         DefaultRootObject: "index.html"
         Enabled: true
@@ -129,7 +130,7 @@ Resources:
         Origins:
           - DomainName: 
               !Join [ "", [ !Ref PortfolioWebsiteBucket, ".s3.amazonaws.com" ] ]
-            Id: personal-website-host
+            Id: personal-website-host-origin
             S3OriginConfig:
               OriginAccessIdentity:
                 !Join [ "", [ "origin-access-identity/cloudfront/", !Ref PortfolioCloudFrontOriginAccessIdentity ] ]
