@@ -44,7 +44,7 @@ Resources:
 
   PortfolioWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
-    DependsOn: CloudFrontDistribution
+    DependsOn: PortfolioCloudFrontDistribution
     Properties:
       Bucket: !Ref PortfolioWebsiteBucket
       PolicyDocument:
