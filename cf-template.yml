@@ -89,7 +89,9 @@ Resources:
 
   PortfolioCloudFrontDistribution:
     Type: "AWS::CloudFront::Distribution" 
-    DependsOn: PortfolioWebsiteBucket
+    DependsOn: 
+      - PortfolioWebsiteBucket
+      - PortfolioCloudFrontOriginAccessIdentity
     Properties:
       DistributionConfig:
         Aliases:
