@@ -49,6 +49,16 @@ Resources:
       Bucket: !Ref PortfolioWebsiteBucket
       PolicyDocument:
         Statement:
+          - Sid: CloudFrontDistributionAccess
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt TheCloudFrontOriginAccessIdentity.S3CanonicalUserId
+            Action:
+              s3:GetObject
+            Resource: !Join [ "", [ "arn:aws:s3:::", !Ref PortfolioWebsiteBucket, "/*" ]]
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${PortfolioCloudFrontDistribution}"
           # - Sid: PublicReadGetObject
           #   Effect: Allow
           #   Principal: '*'
@@ -59,16 +69,6 @@ Resources:
           #     - - 'arn:aws:s3:::'
           #       - !Ref PortfolioWebsiteBucket
           #       - '/*'
-          - Sid: CloudFrontDistributionAccess
-            Effect: Allow
-            Principal:
-              CanonicalUser: !GetAtt TheCloudFrontOriginAccessIdentity.S3CanonicalUserId
-            Action:
-              s3:GetObject
-            Resource: !Sub ${PortfolioWebsiteBucket.Arn}/*
-            # Condition:
-            #   StringEquals:
-            #     AWS:SourceArn: !Sub ${CloudFrontDistribution.Arn}
 
   # # Creating certificate in certificate manager    
   # CloudFrontOriginAccessControl:
