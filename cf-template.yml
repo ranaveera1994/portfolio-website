@@ -143,14 +143,11 @@ Resources:
     DependsOn: PortfolioCloudFrontDistribution
     Properties:
       HostedZoneId: !Ref PortfolioHostedZone
-      RecordSets:
-      - Name: !Ref PortfolioDomainName
-        Type: A
-        AliasTarget: 
-          HostedZoneId: !Ref PortfolioHostedZone
-          DNSName: !GetAtt
-            - PortfolioCloudFrontDistribution
-            - DomainName
+      Name: !Ref PortfolioDomainName
+      Type: A
+      AliasTarget: 
+        HostedZoneId: !Ref PortfolioHostedZone
+        DNSName: !GetAtt PortfolioCloudFrontDistribution.DomainName
       # Comment: DNS name for cloud front
       # Name: !Ref PortfolioDomainName
       # Type: A
