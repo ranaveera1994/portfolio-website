@@ -1,4 +1,4 @@
-import '../App.css';
+  import ContactForm from './ContactForm';
 
 function Body() {
   return (
@@ -12,6 +12,10 @@ function Body() {
         <li>HTML, CSS (lol...)</li>
       </ul>
 
+    <div>
+      <ContactForm />
+    </div>
+    
     </div>
   );
 }

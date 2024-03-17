@@ -1,4 +1,4 @@
-import {React, useState} from "react";
+import React, {useState} from "react";
 import { CiMenuBurger } from "react-icons/ci";
 import { AiOutlineClose } from "react-icons/ai";
 
@@ -10,7 +10,7 @@ const Header = () => {
   };
 
   return (
-    <div className='flex justify-between items-center max-w-[1240px] h-24 mx-auto px-4 text-white'>
+    <div className='flex justify-between items-center max-w-[1240px] h-24 mx-auto text-white px-5'>
       <h1 className='w-full text-3xl font-bold text-[#00df9a]'>Rana.</h1>
       <ul className='hidden md:flex'>
         <li className='p-4'>About</li>
