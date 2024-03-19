@@ -7,36 +7,34 @@ const ContactForm = () => {
     message: "",
   });
 
-  // const [submissionResult, setSubmissionResult] = useState(null);
+  const [submissionResult, setSubmissionResult] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData)
+    try {
+      const response = await fetch("https://143s4b0pi6.execute-api.us-east-1.amazonaws.com/prod/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    // try {
-    //   const response = await fetch("https://143s4b0pi6.execute-api.us-east-1.amazonaws.com/prod/", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(formData),
-    //   });
+      if (!response.ok) {
+        throw new Error("Failed to submit the form");
+      }
 
-    //   if (!response.ok) {
-    //     throw new Error("Failed to submit the form");
-    //   }
+      const result = await response.json();
+      setSubmissionResult(result);
 
-    //   const result = await response.json();
-    //   setSubmissionResult(result);
-
-    //   // Handle successful response, if needed
-    //   console.log("Form submitted successfully:", result);
-    // } catch (error) {
-    //   console.error("Error submitting the form:", error.message);
-    //   // Handle the error as needed
-    //   setSubmissionResult({ error: error.message });
-    // }
+      // Handle successful response, if needed
+      console.log("Form submitted successfully:", result);
+    } catch (error) {
+      console.error("Error submitting the form:", error.message);
+      // Handle the error as needed
+      setSubmissionResult({ error: error.message });
+    }
   };
 
   return (
@@ -79,7 +77,7 @@ const ContactForm = () => {
         </button>
       </form>
 
-      {/* {submissionResult && (
+      {submissionResult && (
         <div>
           <h2>Submission Result:</h2>
           {submissionResult.error ? (
@@ -88,7 +86,7 @@ const ContactForm = () => {
             <p style={{ color: "green" }}>Success: {submissionResult.body}</p>
           )}
         </div>
-      )} */}
+      )}
     </div>
   );
 };
