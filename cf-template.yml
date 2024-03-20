@@ -88,7 +88,7 @@ Resources:
             Cookies:
                 Forward: none
             QueryString: false
-          MaxTTL: 86400
+          MaxTTL: 300
           MinTTL: 60
           TargetOriginId: personal-website-host-origin
           ViewerProtocolPolicy: redirect-to-https
