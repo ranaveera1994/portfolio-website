@@ -55,7 +55,7 @@ const ContactForm = () => {
     <div>
       <form onSubmit={handleSubmit} className="w-full py-16 text-white flex flex-col items-center">
         <label className="py-5">
-          First Name:
+          First Name :
           <input
             className="px-5 w-full rounded-md text-black"
             type="text"
