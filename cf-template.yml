@@ -68,7 +68,7 @@ Resources:
           AcmCertificateArn: !Ref PortfolioCertificate
           SslSupportMethod: sni-only
         CustomErrorResponses:
-          - ErrorCachingMinTTL: 300
+          - ErrorCachingMinTTL: 0
             ErrorCode: 403
             ResponseCode: 404
             ResponsePagePath: /index.html
@@ -83,13 +83,13 @@ Resources:
             - HEAD
             - OPTIONS
           Compress: true
-          DefaultTTL: 3600
+          DefaultTTL: 0
           ForwardedValues:
             Cookies:
                 Forward: none
             QueryString: false
-          MaxTTL: 300
-          MinTTL: 60
+          MaxTTL: 0
+          MinTTL: 0
           TargetOriginId: personal-website-host-origin
           ViewerProtocolPolicy: redirect-to-https
         DefaultRootObject: "index.html"
