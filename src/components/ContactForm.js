@@ -23,6 +23,7 @@ const ContactForm = () => {
 
     try {
       const response = await fetch("https://yxvsy6hsih.execute-api.us-east-1.amazonaws.com/Prod/validate", {
+        mode:  'cors',
         method: "POST",
         headers: {
           "Content-Type": "application/json",
