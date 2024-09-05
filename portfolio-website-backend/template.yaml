@@ -45,6 +45,25 @@ Resources:
           Properties:
             Path: /validate
             Method: put
+        MyApi2:
+          Type: Api
+          Properties:
+            Path: /validate
+            Method: post
+            RestApiId: !Ref MyApiGateway1
+            Cors:
+              AllowMethods: "'OPTIONS,POST,GET'"
+              AllowHeaders: "'Content-Type'"
+              AllowOrigin: "'*'"
+
+  MyApiGateway1:
+    Type: 'AWS::Serverless::Api'
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'OPTIONS,POST,GET'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'" # Or your specific domain
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
