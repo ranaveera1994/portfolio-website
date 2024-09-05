@@ -22,7 +22,7 @@ const ContactForm = () => {
     console.log("Form data", formData);
 
     try {
-      const response = await fetch("https://143s4b0pi6.execute-api.us-east-1.amazonaws.com/prod/", {
+      const response = await fetch("https://yxvsy6hsih.execute-api.us-east-1.amazonaws.com/Prod/validate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
