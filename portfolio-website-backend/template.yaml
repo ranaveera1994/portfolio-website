@@ -40,10 +40,6 @@ Resources:
           Properties:
             Path: /validate
             Method: put
-            Cors:
-              AllowMethods: "'OPTIONS,POST,GET'"
-              AllowHeaders: "'Content-Type'"
-              AllowOrigin: "'*'"
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
